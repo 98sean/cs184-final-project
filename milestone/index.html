@@ -45,17 +45,37 @@
 
 
 
+
+			
 		<h2>Milestone Report</h2>
 				
 		<p>
-		This should be about 1 page long if printed.
+		Following our proposal and the feedback, we studied Greg Ward's paper on ambient caching algorithm and implemented an initial grid-based cache system. Then, we compared the performance with the standard Monte Carlo approach in HW3.
 		</p>
 
 		<p>
-		You should briefly summarize what you have accomplished, preliminary results, reflect on progress relative to your plan, and update your work plan as appropriate.
+		Our current ambient lighting implementation consists of four key components, primarily leveraging a spatial caching system:
 		</p>
 
+		<ul>
+            		<li>
+                	<strong>Grid-based Spatial Cache:</strong> We utilize a uniform 3D grid structure for storing ambient lighting values. Each cache entry contains position, surface normal, and the computed ambient radiance value.
+            		</li>
+			
+            		<li>
+                	<strong>Cache Lookup with Simple Interpolation:</strong> The ambient cache is integrated into the indirect lighting computation. In <code>at_least_one_bounce_radiance()</code>, we first attempt to retrieve cached values. On cache misses, ambient lighting is computed using 256 hemisphere samples and the result is stored. Cache hits retrieve values using inverse distance weighted interpolation from nearby entries.
+            		</li>
+			
+            		<li>
+               	 	<strong>Cache Visualization:</strong> We developed a visualization system that renders cache points as colored spheres, with color indicating ambient intensity (blue = low, red = high). This aids in understanding cache distribution and debugging grid spacing parameters.
+            		</li>
+			
+            		<li>
+                	<strong>Command Line Parameter:</strong> A <code>-g</code> flag has been added to enable ambient Global Illumination (GI) mode, allowing for comparisons with standard Monte Carlo rendering.
+            		</li>
+        	</ul>
 
+		
 
 
 			
