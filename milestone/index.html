@@ -9,7 +9,7 @@
 
 			.container {
 				margin: 0 auto;
-				padding: 60px 5%;
+				padding: 60px 10%;
 			}
 
 			figure {
@@ -90,7 +90,7 @@
 		</figure>
 
 		<p>
-		As shown in <em>Figure 2</em>, we tested and visualized our implementation with various grid spacing. The result shows that caching can effectively achieve rendering speedups. However, it produces color patches and artifacts in the image, which we will address in the next step. 
+		As shown in <em>Figure 2</em>, we tested 0.5, 1.0, 1.5, and 2.0 grid spacing and found that caching can effectively achieve rendering speedups. However, it produces color patches and artifacts in the image. Compared to the reference image with Monte Carlo, caching loses the smooth lighting gradients effect. We will address these limitations by implementing Ward's algorithm, including gradient computation for proper cache validation and potentially transitioning to an octree, KD tree, or 3D hash table for adaptive spatial subdivision. This should significantly improve visual quality while maintaining the performance benefits demonstrated in this milestone.
 		</p>
 		
 
