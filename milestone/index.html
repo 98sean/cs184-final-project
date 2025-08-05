@@ -78,16 +78,16 @@
   			</figcaption>
 		</figure>
 
+		<p>
+		As shown in <em>Figure 1</em>, when rays hit surfaces, we either reuse cached values or compute new ones.
+		</p>
+
 		<figure style="text-align: center; margin: 1em 0;">
   			<img src="comparison.jpg" alt="comparison.jpg" style="width: 100%">
   			<figcaption style="margin-top: 0.5em;"><em>Figure 2:</em> 
 			Images rendered with Ambient GI caching
   			</figcaption>
 		</figure>
-
-		<p>
-		As shown in <em>Figure 1</em>, when rays hit surfaces, we either reuse cached values or compute new ones.
-		</p>
 
 		<p>
 		As shown in <em>Figure 2</em>, we tested and visualized our implementation with various grid spacing. The result shows that caching can effectively achieve rendering speedups. However, it produces color patches and artifacts in the image, which we will address in the next step. 
