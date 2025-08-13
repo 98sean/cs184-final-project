@@ -58,7 +58,7 @@
 		<h2>Abstract</h2>
 				
 		<p>
-		Radiance, authored by Greg Ward, is a gold standard in physically-based rendering, renowned for its ability to simulate realistic lighting in architectural and interior scenes. One of its key innovations is ambient global illumination (GI)—an efficient technique for caching and interpolating indirect diffuse light. We implemented Ward's ambient caching algorithm in the CS184 pathtracer, developing an adaptive octree-based system that replaces expensive Monte Carlo sampling with spatial interpolation. Our implementation achieves \( 15 - 30* \) speedups for interior scenes while maintaining visual quality. Through evaluation on Cornell Box scenes with varying geometric complexity, we demonstrate that ambient caching remains a powerful optimization for modern path tracers, particularly for architectural visualization where indirect lighting exhibits high spatial coherence.
+		Radiance, authored by Greg Ward, is a gold standard in physically-based rendering, renowned for its ability to simulate realistic lighting in architectural and interior scenes. One of its key innovations is ambient global illumination (GI)—an efficient technique for caching and interpolating indirect diffuse light. We implemented Ward's ambient caching algorithm in the CS184 pathtracer, developing an adaptive octree-based system that replaces expensive Monte Carlo sampling with spatial interpolation. Our implementation achieves \( 15 - 20× \) speedups for interior scenes while maintaining visual quality. Through evaluation on Cornell Box scenes with varying geometric complexity, we demonstrate that ambient caching remains a powerful optimization for modern path tracers, particularly for architectural visualization where indirect lighting exhibits high spatial coherence.
 		</p>
 
 
@@ -68,7 +68,7 @@
 
 		<h3>Summary</h3>
 		<p>
-		We implemented an octree-based ambient global illumination caching system inspired by Greg Ward's Radiance renderer. Our approach accelerates indirect lighting computation by caching and interpolating previously computed values, achieving \( 15 - 30* \) speedup over Monte Carlo path tracing in HW3.
+		We implemented an octree-based ambient global illumination caching system inspired by Greg Ward's Radiance renderer. Our approach accelerates indirect lighting computation by caching and interpolating previously computed values, achieving \( 15 - 20× \) speedup over Monte Carlo path tracing in HW3.
 		</p>
 
 		<p>
@@ -85,11 +85,11 @@
 			</li>
 			
             <li>
-            <strong>Efficient Octree Traversal for Cache Queries:</strong> \( O(log(n)) \) cache lookups through octree traversal with spatial pruning. Search regions are defined as cubic volumes \( (12 * min_spacing) \) around query points, with the octree efficiently discarding non-intersecting branches during traversal.
+            <strong>Efficient Octree Traversal for Cache Queries:</strong> \( O(log(n)) \) cache lookups through octree traversal with spatial pruning. Search regions are defined as cubic volumes \( (12 × \text{min\_spacing}) \) around query points, with the octree efficiently discarding non-intersecting branches during traversal.
 			</li>
 			
             <li>
-            <strong>Cache Miss/Hit Handling:</strong> When queries find no nearby samples (cache miss), the system computes indirect illumination using Monte Carlo integration and stores the result in the octree. Cache hits enable fast weighted interpolation from nearby samples, eliminating expensive ray casting. The formula \( w = (1 / distance) * normal_similarity \) ensures smooth transitions while prioritizing geometrically similar samples.
+            <strong>Cache Miss/Hit Handling:</strong> When queries find no nearby samples (cache miss), the system computes indirect illumination using Monte Carlo integration and stores the result in the octree. Cache hits enable fast weighted interpolation from nearby samples, eliminating expensive ray casting. The formula \( w = (1/\text{distance}) × \text{normal\_similarity} \) ensures smooth transitions while prioritizing geometrically similar samples.
 			</li>
 			
             <li>
@@ -131,7 +131,7 @@
 		</figure>
 			
 		<p>
-		<em>Figure 2.2</em> demonstrates the spatial acceleration provided by our octree data structure for ambient cache queries. When a ray intersects a surface and requires indirect illumination, we define a cubic search region around the hit point with dimensions \( 12 * min_spacing \) \( (± 6 * min_spacing in each direction) \). The octree traversal algorithm efficiently prunes the search space by testing bounding box intersections at each level. In the left panel, the search region intersects only the bottom-right octant, allowing the algorithm to immediately discard seven of the eight root-level children without examination. The traversal continues recursively, visiting only octants whose bounding boxes intersect the search region, until reaching leaf nodes that either contain cache samples or are empty. The right panel illustrates a deeper tree structure where cache samples have accumulated over multiple rendering passes, requiring traversal through multiple subdivision levels to locate relevant entries. This spatial pruning achieves \( O(log(n)) \) query complexity compared to the \( O(n) \) complexity of exhaustive search, where \( n \) is the total number of cached samples.
+		<em>Figure 2.2</em> demonstrates the spatial acceleration provided by our octree data structure for ambient cache queries. When a ray intersects a surface and requires indirect illumination, we define a cubic search region around the hit point with dimensions \( 12 × \text{min\_spacing} \) \( (± 6 × \text{min\_spacing} in each direction) \). The octree traversal algorithm efficiently prunes the search space by testing bounding box intersections at each level. In the left panel, the search region intersects only the bottom-right octant, allowing the algorithm to immediately discard seven of the eight root-level children without examination. The traversal continues recursively, visiting only octants whose bounding boxes intersect the search region, until reaching leaf nodes that either contain cache samples or are empty. The right panel illustrates a deeper tree structure where cache samples have accumulated over multiple rendering passes, requiring traversal through multiple subdivision levels to locate relevant entries. This spatial pruning achieves \( O(log(n)) \) query complexity compared to the \( O(n) \) complexity of exhaustive search, where \( n \) is the total number of cached samples.
 		</p>
 
 
@@ -141,7 +141,7 @@
 		<h3>Ambient Cache Miss vs Hit: Computation vs Interpolation</h3>
 
 		<figure style="text-align: center; margin: 1em 0;">
-  			<img src="computation.jpg" alt="computation.jpg" style="width: 100%">
+  			<img src="Computation.jpg" alt="Computation.jpg" style="width: 100%">
   			<figcaption style="margin-top: 0.5em;"><em>Figure 2.3:</em> 
 			Cache miss triggers expensive Monte Carlo GI (left) while cache hit enables fast weighted interpolation from nearby samples (right). Distance and normal similarity determine interpolation weights, providing significant speedup over Monte Carlo sampling.
   			</figcaption>
@@ -156,7 +156,7 @@
 		</p>
 
 		<ul>
-			<li>\[ w = (1 / distance) * normal_similarity \]</li>
+			<li>\[ w = (1 / \text{distance}) × \text{normal\_similarity} \]</li>
 		</ul>
 
 		<p>
@@ -168,7 +168,7 @@
 		</ul>
 
 		<p>
-		Here \( d_i \) is the distance to sample \( i \) and \( theta_i \) is the angle between surface normals.
+		Here \( d_i \) is the distance to sample \( i \) and \( \theta_i \) is the angle between surface normals.
 		</p>
 
 		<p>
