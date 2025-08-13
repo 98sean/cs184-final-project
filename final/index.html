@@ -28,36 +28,28 @@
 	<body>
 		<div class="container">
 		<h1>CS184 Summer 2025 Final Project Final Report</h1>
-		<div style="text-align: center;">Project Name: </div>	
-		<div style="text-align: center;">Members: </div>
+
+		<figure style="text-align: center; margin: 1em 0;">
+  			<img src="f-02.jpg" alt="f-02.jpg" style="width: 100%">
+  			<figcaption style="margin-top: 0.5em;"><em>Figure 1:</em> 
+			Octree caches visualizations
+  			</figcaption>
+		</figure>
+			
+		<div style="text-align: center;">Project Name: Ambient Global Illumination with Caching</div>	
+		<div style="text-align: center;">Members: Xin Zhou, Sean Lee, Archisha Nangia, Carlynda Gao</div>
 
 		<br>
-
-		Link to webpage: <a href="https://98sean.github.io/cs184-final-project/final/index.html">cs184-final-project/final</a>
+		<a href="https://98sean.github.io/cs184-final-project/final/index.html">Link to webpage</a>
 		
 		<br>
-
-		Link to GitHub repository: <a href="https://github.com/98sean/cs184-final-project">cs184-final-project</a>
-
-			
-
-
-		<h2>Project Video</h2>
+		<a href="https://github.com/98sean/cs184-final-project">Link to GitHub repository</a>
 
 		<br>
-		Link to Final Project Video: <a href="https://github.com/98sean/cs184-final-project">Change This!!!</a>
+		<a href="https://drive.google.com/file/d/17j2J4o59Nf3lxjc2iARp6NVTCGqcfLeb/view?usp=drive_link">Link to presentation video ***CHANGE THIS***</a>
 
-		<p>
-		Each team will also be required to share a 1-2 minute final project video online. We strongly encourage you to take the time to polish your video and use the time to clearly highlight your most beautiful and compelling results, explain your technical approach at a high level and in an engaging way, and to explain what you learned and why future students should be interested to pursue a similar project.
-		</p>
-
-		<p>
-		Every group member should be present / speak within this video.
-		</p>
-
-		<p>
-		Teams selected as Showcase Projects (see below) will have their video, and only their video, appear on a class webpage recognizing the Showcase Projects. This further underscores the importance and visibility of these videos.
-		</p>
+		<br>
+		<a href="https://docs.google.com/presentation/d/13EkVUP_bXGpUi1EmsAHIOzMttX8_rrmWkLGRW9vkFNs/edit?usp=drive_link">Link to presentation slides</a>
 
 
 
@@ -66,24 +58,156 @@
 		<h2>Abstract</h2>
 				
 		<p>
-		A paragraph summary of the entire project.
+		Radiance, authored by Greg Ward, is a gold standard in physically-based rendering, renowned for its ability to simulate realistic lighting in architectural and interior scenes. One of its key innovations is ambient global illumination (GI)—an efficient technique for caching and interpolating indirect diffuse light. We implemented Ward's ambient caching algorithm in the CS184 pathtracer, developing an adaptive octree-based system that replaces expensive Monte Carlo sampling with spatial interpolation. Our implementation achieves \( 15 - 30* \) speedups for interior scenes while maintaining visual quality. Through evaluation on Cornell Box scenes with varying geometric complexity, we demonstrate that ambient caching remains a powerful optimization for modern path tracers, particularly for architectural visualization where indirect lighting exhibits high spatial coherence.
 		</p>
 
 
 
 			
 		<h2>Technical approach</h2>
-				
+
+		<h3>Summary</h3>
 		<p>
-		A 1-2 page summary of your technical approach, techniques used, algorithms implemented, etc. (use references to papers or other resources for further detail). Highlight how your approach varied from the references used (did you implement a subset, or did you change or enhance anything), the unique decisions you made and why.
+		We implemented an octree-based ambient global illumination caching system inspired by Greg Ward's Radiance renderer. Our approach accelerates indirect lighting computation by caching and interpolating previously computed values, achieving \( 15 - 30* \) speedup over Monte Carlo path tracing in HW3.
 		</p>
 
 		<p>
-		A description of problems encountered and how you tackled them.
+		We initially prototyped with a uniform grid to validate the caching concept, then developed the adaptive octree structure to handle non-uniform sample distributions more efficiently. The system integrates seamlessly with the existing pathtracer through the <code>-g</code> flag for ambient GI and <code>-V</code> for cache visualization.	
 		</p>
 
 		<p>
-		A description of lessons learned.
+		Our implementation consists of the following four core components:
+		</p>
+
+		<ul>
+			<li>
+            <strong>Adaptive Octree Data Structure:</strong> A hierarchical spatial subdivision that dynamically adapts to scene complexity. The octree automatically subdivides when leaf nodes exceed \( 8 \) samples, concentrating resolution where illumination varies most while maintaining memory efficiency in uniform regions.
+			</li>
+			
+            <li>
+            <strong>Efficient Octree Traversal for Cache Queries:</strong> \( O(log(n)) \) cache lookups through octree traversal with spatial pruning. Search regions are defined as cubic volumes \( (12 * min_spacing) \) around query points, with the octree efficiently discarding non-intersecting branches during traversal.
+			</li>
+			
+            <li>
+            <strong>Cache Miss/Hit Handling:</strong> When queries find no nearby samples (cache miss), the system computes indirect illumination using Monte Carlo integration and stores the result in the octree. Cache hits enable fast weighted interpolation from nearby samples, eliminating expensive ray casting. The formula \( w = (1 / distance) * normal_similarity \) ensures smooth transitions while prioritizing geometrically similar samples.
+			</li>
+			
+            <li>
+            <strong>Cache Visualization:</strong> We developed a visualization system that renders cache points as colored spheres, with color indicating ambient intensity (blue = low, green = medium, red = high). This helps us understand cache distribution and debug grid spacing parameters.
+			</li>
+        </ul>
+
+
+
+
+
+		<h3>Adaptive Octree Data Structure</h3>
+		<p>
+		<em>Fig 2.1</em> shows octree subdivision adaptive to the scene. As new cache samples in red are added in regions with complex illumination, the octree automatically subdivides when any leaf exceeds \( 8 \) samples, maintaining efficient spatial organization throughout the rendering process.
+		</p>
+
+		<figure style="text-align: center; margin: 1em 0;">
+  			<img src="sub.jpg" alt="sub.jpg" style="width: 100%">
+  			<figcaption style="margin-top: 0.5em;"><em>Figure 2.1:</em> 
+			Progressive octree subdivision during ambient cache construction. As cache samples accumulate, the octree automatically subdivides regions exceeding 8 samples per leaf node, creating an adaptive spatial hierarchy that concentrates resolution in areas of complex illumination.
+  			</figcaption>
+		</figure>
+
+		<p>
+		<em>Figure 2.1</em> illustrates the progressive octree refinement during ambient cache construction for the Cornell Box bunny scene. Starting from an empty octree <code>(Level 0)</code>, the first \( 8 \) cache samples are computed when rays hit the bunny's surface under the area light, triggering the initial subdivision into \( 8 \) octants <code>(Level 1)</code>. As rendering continues, new cache samples (shown in red) are generated when cache queries miss, particularly in the bottom-left octant where the bunny's body receives complex indirect illumination from the surrounding walls. When this octant accumulates \( 8 \) samples, it automatically subdivides <code>(Level 2)</code>, creating finer spatial resolution precisely where illumination are strongest. This process continues adaptively <code>(Level 3)</code>, with the octree depth increasing only in regions with high sample density, such as areas with geometric detail or varying illumination. Empty octants and uniform regions remain at coarser levels, optimizing both memory usage and query performance. This adaptive refinement ensures \( O(log(n)) \) lookup complexity while concentrating computational resources where they contribute most to rendering quality.
+		</p>
+		
+
+
+
+			
+		<h3>Efficient Octree Traversal for Cache Queries</h3>
+
+		<figure style="text-align: center; margin: 1em 0;">
+  			<img src="traverse.jpg" alt="traverse.jpg" style="width: 100%">
+  			<figcaption style="margin-top: 0.5em;"><em>Figure 2.2:</em> 
+			Octree acceleration structure enables efficient spatial queries. Most octants are pruned (dotted) based on search region intersection, reducing traversal to \( O(log(n)) \) complexity.
+  			</figcaption>
+		</figure>
+			
+		<p>
+		<em>Figure 2.2</em> demonstrates the spatial acceleration provided by our octree data structure for ambient cache queries. When a ray intersects a surface and requires indirect illumination, we define a cubic search region around the hit point with dimensions \( 12 * min_spacing \) \( (± 6 * min_spacing in each direction) \). The octree traversal algorithm efficiently prunes the search space by testing bounding box intersections at each level. In the left panel, the search region intersects only the bottom-right octant, allowing the algorithm to immediately discard seven of the eight root-level children without examination. The traversal continues recursively, visiting only octants whose bounding boxes intersect the search region, until reaching leaf nodes that either contain cache samples or are empty. The right panel illustrates a deeper tree structure where cache samples have accumulated over multiple rendering passes, requiring traversal through multiple subdivision levels to locate relevant entries. This spatial pruning achieves \( O(log(n)) \) query complexity compared to the \( O(n) \) complexity of exhaustive search, where \( n \) is the total number of cached samples.
+		</p>
+
+
+
+
+			
+		<h3>Ambient Cache Miss vs Hit: Computation vs Interpolation</h3>
+
+		<figure style="text-align: center; margin: 1em 0;">
+  			<img src="computation.jpg" alt="computation.jpg" style="width: 100%">
+  			<figcaption style="margin-top: 0.5em;"><em>Figure 2.3:</em> 
+			Cache miss triggers expensive Monte Carlo GI (left) while cache hit enables fast weighted interpolation from nearby samples (right). Distance and normal similarity determine interpolation weights, providing significant speedup over Monte Carlo sampling.
+  			</figcaption>
+		</figure>
+	
+		<p>
+		<em>Figure 2.3</em> illustrates the fundamental performance distinction between cache misses and cache hits in our ambient GI implementation. When the octree traversal fails to locate nearby cache samples (left), a cache miss occurs, triggering the expensive computation of indirect illumination using Monte Carlo integration. The computed ambient value is then stored in the octree for future reuse. In contrast, when the octree contains nearby samples within the search region (right), a cache hit enables fast interpolation without additional ray casting.
+		</p>
+		
+		<p>
+		Our interpolation algorithm weights cached samples based on inverse distance and normal similarity:
+		</p>
+
+		<ul>
+			<li>\[ w = (1 / distance) * normal_similarity \]</li>
+		</ul>
+
+		<p>
+		The weighted interpolation combines nearby cache samples using:
+		</p>
+
+		<ul>
+			<li>\[ C = \frac{\sum_{i} w_i C_i}{\sum_{i} w_i}, \quad \text{where} \quad w_i = \frac{1}{d_i} \cdot \cos(\theta_i) \]</li>
+		</ul>
+
+		<p>
+		Here \( d_i \) is the distance to sample \( i \) and \( theta_i \) is the angle between surface normals.
+		</p>
+
+		<p>
+		This approach ensures that closer samples and those with similar surface orientations contribute more heavily to the final result. This weighted average ensures smooth transitions between cached values while prioritizing samples that are both spatially close and geometrically similar to the query point.	
+		</p>
+
+
+
+
+			
+		<h3>Problems encountered</h3>
+		<p>
+		We encoutered the following two issue in this project:
+		</p>
+		<ul>
+			<li>
+            <strong>Cache Density Parameter Tuning:</strong> Finding the optimal <code>min_spacing</code> parameter for different scenes proved more complex than anticipated. Too sparse spacing \( (> 0.05)\) caused visible interpolation artifacts and banding, while too dense spacing \( (< 0.01)\) negated performance benefits and increased memory usage. We addressed this through extensive experimentation and developed our cache visualization system with <code>-V</code> flag to visually debug cache distribution. This allowed us to identify that interior scenes work best with densities around \( 0.012-0.02 \), providing a good balance between quality and performance.
+			</li>
+			
+            <li>
+            <strong>Debugging Cache Interpolation Artifacts:</strong> Early implementations showed unexpected color bleeding and discontinuities at cache boundaries. These artifacts were particularly visible in the Cornell Box's colored walls. Through our visualization system, we discovered that our initial interpolation wasn't properly accounting for surface normal orientation, which means that samples from differently oriented surfaces were being incorrectly blended. Adding normal similarity weighting <code>dot(n1, n2)</code> to our interpolation formula resolved these artifacts and produced smoother results.
+			</li>
+        </ul>
+
+
+
+
+			
+		<h3>Lessons learned</h3>
+		<p>
+		Through implementing ambient caching, we gained deep appreciation for how spatial coherence in indirect illumination can be exploited for massive performance gains. Interior scenes, where light bounces predictably off nearby surfaces, are ideal candidates for caching strategies. We learned that even without sophisticated gradient extrapolation, simple distance-weighted interpolation can produce visually acceptable results when samples are distributed appropriately. This insight reinforces that understanding the physical properties of light transport can guide algorithmic optimizations.
+		</p>
+
+		<p>
+		Our initial grid-based cache served as a valuable prototype but quickly revealed its limitations. The octree implementation taught us that adaptive spatial data structures are essential when dealing with non-uniform phenomena like illumination. The ability to concentrate samples where they matter most, which is near geometric details and illumination discontinuities, while maintaining sparse sampling in uniform regions, provided both memory efficiency and quality improvements. This lesson extends beyond rendering to any domain with non-uniform spatial data.
+		</p>
+
+		<p>
+		We initially aimed to implement Ward's complete algorithm with rotation gradients and translational gradients. However, the recursion issues forced us to simplify. Rather than viewing this as failure, we learned that a working, simpler solution often provides most of the benefit of a theoretically superior but complex approach. Our gradient-free implementation still achieved \( 10 - 20* \) speedups with good visual quality, validating the pragmatic choice to prioritize functionality over theoretical completeness.
 		</p>
 
 
