@@ -85,11 +85,11 @@
 			</li>
 			
             <li>
-            <strong>Efficient Octree Traversal for Cache Queries:</strong> \( O(log(n)) \) cache lookups through octree traversal with spatial pruning. Search regions are defined as cubic volumes \( (12 × \text{min\_spacing}) \) around query points, with the octree efficiently discarding non-intersecting branches during traversal.
+            <strong>Efficient Octree Traversal for Cache Queries:</strong> \( O(log(n)) \) cache lookups through octree traversal with spatial pruning. Search regions are defined as cubic volumes \( (12 × \text{min_spacing}) \) around query points, with the octree efficiently discarding non-intersecting branches during traversal.
 			</li>
 			
             <li>
-            <strong>Cache Miss/Hit Handling:</strong> When queries find no nearby samples (cache miss), the system computes indirect illumination using Monte Carlo integration and stores the result in the octree. Cache hits enable fast weighted interpolation from nearby samples, eliminating expensive ray casting. The formula \( w = (1/\text{distance}) × \text{normal\_similarity} \) ensures smooth transitions while prioritizing geometrically similar samples.
+            <strong>Cache Miss/Hit Handling:</strong> When queries find no nearby samples (cache miss), the system computes indirect illumination using Monte Carlo integration and stores the result in the octree. Cache hits enable fast weighted interpolation from nearby samples, eliminating expensive ray casting. The formula \( w = (1 / \text{distance}) × \text{normal_similarity} \) ensures smooth transitions while prioritizing geometrically similar samples.
 			</li>
 			
             <li>
@@ -131,7 +131,7 @@
 		</figure>
 			
 		<p>
-		<em>Figure 2.2</em> demonstrates the spatial acceleration provided by our octree data structure for ambient cache queries. When a ray intersects a surface and requires indirect illumination, we define a cubic search region around the hit point with dimensions \( 12 × \text{min\_spacing} \) \( (± 6 × \text{min\_spacing} in each direction) \). The octree traversal algorithm efficiently prunes the search space by testing bounding box intersections at each level. In the left panel, the search region intersects only the bottom-right octant, allowing the algorithm to immediately discard seven of the eight root-level children without examination. The traversal continues recursively, visiting only octants whose bounding boxes intersect the search region, until reaching leaf nodes that either contain cache samples or are empty. The right panel illustrates a deeper tree structure where cache samples have accumulated over multiple rendering passes, requiring traversal through multiple subdivision levels to locate relevant entries. This spatial pruning achieves \( O(log(n)) \) query complexity compared to the \( O(n) \) complexity of exhaustive search, where \( n \) is the total number of cached samples.
+		<em>Figure 2.2</em> demonstrates the spatial acceleration provided by our octree data structure for ambient cache queries. When a ray intersects a surface and requires indirect illumination, we define a cubic search region around the hit point with dimensions \( 12 × \text{min_spacing} \) \( (± 6 × \text{min_spacing} \text{in each direction}) \). The octree traversal algorithm efficiently prunes the search space by testing bounding box intersections at each level. In the left panel, the search region intersects only the bottom-right octant, allowing the algorithm to immediately discard seven of the eight root-level children without examination. The traversal continues recursively, visiting only octants whose bounding boxes intersect the search region, until reaching leaf nodes that either contain cache samples or are empty. The right panel illustrates a deeper tree structure where cache samples have accumulated over multiple rendering passes, requiring traversal through multiple subdivision levels to locate relevant entries. This spatial pruning achieves \( O(log(n)) \) query complexity compared to the \( O(n) \) complexity of exhaustive search, where \( n \) is the total number of cached samples.
 		</p>
 
 
@@ -156,7 +156,7 @@
 		</p>
 
 		<ul>
-			<li>\[ w = (1 / \text{distance}) × \text{normal\_similarity} \]</li>
+			<li>\[ w = (1 / \text{distance}) × \text{normal_similarity} \]</li>
 		</ul>
 
 		<p>
@@ -207,7 +207,7 @@
 		</p>
 
 		<p>
-		We initially aimed to implement Ward's complete algorithm with rotation gradients and translational gradients. However, the recursion issues forced us to simplify. Rather than viewing this as failure, we learned that a working, simpler solution often provides most of the benefit of a theoretically superior but complex approach. Our gradient-free implementation still achieved \( 10 - 20* \) speedups with good visual quality, validating the pragmatic choice to prioritize functionality over theoretical completeness.
+		We initially aimed to implement Ward's complete algorithm with rotation gradients and translational gradients. However, the recursion issues forced us to simplify. Rather than viewing this as failure, we learned that a working, simpler solution often provides most of the benefit of a theoretically superior but complex approach. Our gradient-free implementation still achieved \( 10 - 20× \) speedups with good visual quality, validating the pragmatic choice to prioritize functionality over theoretical completeness.
 		</p>
 
 
@@ -215,11 +215,68 @@
 
 			
 		<h2>Results</h2>
-				
+
+		<h3>Demo</h3>
+
 		<p>
-		Your final images, animations, video of your system (whichever is relevant). You can include results that you think show off what you built but that you did not have time to go over on presentation day.
+		The demo shows how to render a <code>CBbunny.dae</code> scene with ambient GI <code>-g</code> and cache visualization <code>-V</code> enabled. The command line parameters <code>-g</code> and <code>-V</code> are currently not available in the interactive mode.
 		</p>
 
+		<ul>
+			<li>
+			To show the bunny rendering with octree caching, the CLI is: <code>-t 8 -s 1024 -l 16 -m 5 -r 480 360 -g -f a_demo_nocache ../dae/sky/CBbunny.dae</code>
+			</li>
+			
+            <li>
+			To show the cache visualization , the CLI is: <code>-t 8 -s 1024 -l 16 -m 5 -r 480 360 -V -g -f a_demo_cache ../dae/sky/CBbunny.dae</code> 
+			</li>
+        </ul>
+
+		<iframe width="420" height="315"
+		src="https://www.youtube.com/embed/5qZoQvpq2xk">
+		</iframe>
+
+		<ul>
+			<li>
+			For the results above, we used 14 threads for the renderings but it always caused app crashes when recording on Zoom. For demonstration, we just temporarily used 8 threads instead.	
+			</li>
+			
+            <li>
+			The cache densities can only be modified in the code. There is no command line parameter supporting it.
+			</li>
+
+			<li>
+			If the demo video is disabled in PDF, please click on the link: <a href=https://www.youtube.com/watch?v=5qZoQvpq2xk&feature=youtu.be">https://youtu.be/5qZoQvpq2xk</a>
+			</li>
+        </ul>
+
+
+
+
+
+		<h3>Octree Cache Performance</h3>
+				
+		<p>
+		Our octree-based ambient caching system demonstrates significant performance improvements over Monte Carlo path tracing while maintaining visual quality. We evaluated the system using Cornell Box scenes with varying geometric complexity and cache densities.
+		</p>
+
+		<figure style="text-align: center; margin: 1em 0;">
+  			<img src="Computation.jpg" alt="Computation.jpg" style="width: 100%">
+  			<figcaption style="margin-top: 0.5em;"><em>Figure 3.1:</em> 
+			Performance comparison of Monte Carlo reference vs. octree caching with varying cache densities (Cornell Box with spheres).
+  			</figcaption>
+		</figure>
+
+		<p>
+		| Method       | Cache Density | Render Time | Speedup   | Visual Quality         |
+  		| ------------ | ------------- | ----------- | --------- | ---------------------- |
+ 		| Monte Carlo  | -             | 422.48s     | 1.0×      | Reference              |
+  		| Octree Cache | 0.012         | 23.01s      | **18.3×** | Excellent match        |
+  		| Octree Cache | 0.02          | 17.21s      | **24.5×** | Good, slight artifacts |
+  		| Octree Cache | 0.035         | 14.25s      | **29.6×** | Visible interpolation  |
+  		| Octree Cache | 0.05          | 13.42s      | **31.5×** | Sparse, some banding   |
+		<p>
+			
 		<p>
 		Please include in your final deliverable a small clip, gif, movie, or animation of your team’s output for the final showcase.
 		</p>
