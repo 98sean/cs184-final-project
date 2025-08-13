@@ -48,6 +48,13 @@
   			b {
     			color: #d9534f;
   			}
+
+			code {
+  				background-color: #f4f4f4; /* light gray background */
+  				padding: 2px 4px;         /* space around the text */
+  				border-radius: 4px;       /* rounded corners */
+  				font-family: monospace;   /* ensure code-like font */
+			}
 		</style>
 	</head>
 	<body>
@@ -68,13 +75,13 @@
 		<a href="https://98sean.github.io/cs184-final-project/final/index.html">Link to webpage</a>
 		
 		<br>
-		<a href="https://github.com/98sean/cs184-final-project">Link to GitHub repository</a>
+		<a href="https://github.com/xinzhou93/AmbientGI/tree/main">Link to GitHub repository</a>
 
 		<br>
-		<a href="https://drive.google.com/file/d/17j2J4o59Nf3lxjc2iARp6NVTCGqcfLeb/view?usp=drive_link">Link to presentation video ***CHANGE THIS***</a>
+		<a href="https://drive.google.com/file/d/1Flj2jgLOz2-lDNdRrwxpgttiwlXzwMAs/view?usp=drive_link">Link to presentation video</a>
 
 		<br>
-		<a href="https://docs.google.com/presentation/d/13EkVUP_bXGpUi1EmsAHIOzMttX8_rrmWkLGRW9vkFNs/edit?usp=drive_link">Link to presentation slides</a>
+		<a href="https://docs.google.com/presentation/d/12sODbSclCoypia7RzjMG2vaHERes9CJDVVBVkaTgSzE/edit?usp=drive_link">Link to presentation slides</a>
 
 
 
@@ -83,7 +90,7 @@
 		<h2>Abstract</h2>
 				
 		<p>
-		Radiance, authored by Greg Ward, is a gold standard in physically-based rendering, renowned for its ability to simulate realistic lighting in architectural and interior scenes. One of its key innovations is ambient global illumination (GI)—an efficient technique for caching and interpolating indirect diffuse light. We implemented Ward's ambient caching algorithm in the CS184 pathtracer, developing an adaptive octree-based system that replaces expensive Monte Carlo sampling with spatial interpolation. Our implementation achieves 15 - 30× speedups for interior scenes while maintaining visual quality. Through evaluation on Cornell Box scenes with varying geometric complexity, we demonstrate that ambient caching remains a powerful optimization for modern path tracers, particularly for architectural visualization where indirect lighting exhibits high spatial coherence.
+		<em>Radiance</em>, authored by Greg Ward, is a gold standard in physically-based rendering, renowned for its ability to simulate realistic lighting in architectural and interior scenes. One of its key innovations is ambient global illumination (GI)—an efficient technique for caching and interpolating indirect diffuse light. We implemented Ward's ambient caching algorithm in the CS184 pathtracer, developing an adaptive octree-based system that replaces expensive Monte Carlo sampling with spatial interpolation. Our implementation achieves 15 - 30× speedups for interior scenes while maintaining visual quality. Through evaluation on Cornell Box scenes with varying geometric complexity, we demonstrate that ambient caching remains a powerful optimization for modern path tracers, particularly for architectural visualization where indirect lighting exhibits high spatial coherence.
 		</p>
 
 
@@ -156,7 +163,7 @@
 		</figure>
 			
 		<p>
-		<em>Figure 2.2</em> demonstrates the spatial acceleration provided by our octree data structure for ambient cache queries. When a ray intersects a surface and requires indirect illumination, we define a cubic search region around the hit point with dimensions \( 12 × \text{min_spacing} \) \( (± 6 × \text{min_spacing} \text{in each direction}) \). The octree traversal algorithm efficiently prunes the search space by testing bounding box intersections at each level. In the left panel, the search region intersects only the bottom-right octant, allowing the algorithm to immediately discard seven of the eight root-level children without examination. The traversal continues recursively, visiting only octants whose bounding boxes intersect the search region, until reaching leaf nodes that either contain cache samples or are empty. The right panel illustrates a deeper tree structure where cache samples have accumulated over multiple rendering passes, requiring traversal through multiple subdivision levels to locate relevant entries. This spatial pruning achieves \( O(log(n)) \) query complexity compared to the \( O(n) \) complexity of exhaustive search, where \( n \) is the total number of cached samples.
+		<em>Figure 2.2</em> demonstrates the spatial acceleration provided by our octree data structure for ambient cache queries. When a ray intersects a surface and requires indirect illumination, we define a cubic search region around the hit point with dimensions \( 12 × \text{min_spacing} \) \( (± 6 × \text{min_spacing} \) in each direction \( ) \). The octree traversal algorithm efficiently prunes the search space by testing bounding box intersections at each level. In the left panel, the search region intersects only the bottom-right octant, allowing the algorithm to immediately discard seven of the eight root-level children without examination. The traversal continues recursively, visiting only octants whose bounding boxes intersect the search region, until reaching leaf nodes that either contain cache samples or are empty. The right panel illustrates a deeper tree structure where cache samples have accumulated over multiple rendering passes, requiring traversal through multiple subdivision levels to locate relevant entries. This spatial pruning achieves \( O(log(n)) \) query complexity compared to the \( O(n) \) complexity of exhaustive search, where \( n \) is the total number of cached samples.
 		</p>
 
 
@@ -647,11 +654,11 @@
 			</li>
 
 			<li>
-			Renderings and diagram drawings
+			Final Renderings and diagram drawings
 			</li>
 
 			<li>
-			Report write-up and slides
+			Report write-up, slides and demo
 			</li>
         </ul>
 
@@ -664,7 +671,11 @@
 			</li>
 
 			<li>
-			Code review for grid/octree cache implementation
+			Command Line Parameter implementation
+			</li>
+
+			<li>
+			Scene rendering testing and debugging for grid and octree data structure
 			</li>
 
 			<li>
@@ -681,11 +692,15 @@
 			</li>
 
 			<li>
-			Code review for grid/octree cache implementation
+			Cache memory management
 			</li>
 
 			<li>
-			Report write-up and slides
+			Scene rendering testing and debugging for grid and octree data structure
+			</li>
+
+			<li>
+			Slides and videos
 			</li>
         </ul>
 
@@ -698,11 +713,15 @@
 			</li>
 
 			<li>
-			Code review for grid/octree cache implementation
+			Interpolation techniques and implementation
 			</li>
 
 			<li>
-			Report write-up and slides
+			Scene rendering testing and debugging for grid and octree data structure
+			</li>
+
+			<li>
+			Slides and videos
 			</li>
         </ul>
 
