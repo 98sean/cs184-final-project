@@ -23,6 +23,30 @@
 			body {
 				font-family: 'Inter', sans-serif;
 			}
+
+			table {
+    			width: 60%;
+    			border-collapse: collapse;
+    			margin-top: 10px;
+    			margin-bottom: 40px;
+    			background-color: white;
+    			box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+			  
+  			th, td {
+    			padding: 10px 15px;
+    			text-align: left;
+    			border-bottom: 1px solid #ddd;
+  			}
+  			th {
+   	 			background-color: #f4f4f4;
+    			font-weight: bold;
+  			}
+  			tr:hover {
+    			background-color: #f9f9f9;
+  			}
+  			b {
+    			color: #d9534f;
+  			}
 		</style>
 	</head>
 	<body>
@@ -58,7 +82,7 @@
 		<h2>Abstract</h2>
 				
 		<p>
-		Radiance, authored by Greg Ward, is a gold standard in physically-based rendering, renowned for its ability to simulate realistic lighting in architectural and interior scenes. One of its key innovations is ambient global illumination (GI)—an efficient technique for caching and interpolating indirect diffuse light. We implemented Ward's ambient caching algorithm in the CS184 pathtracer, developing an adaptive octree-based system that replaces expensive Monte Carlo sampling with spatial interpolation. Our implementation achieves \( 15 - 20× \) speedups for interior scenes while maintaining visual quality. Through evaluation on Cornell Box scenes with varying geometric complexity, we demonstrate that ambient caching remains a powerful optimization for modern path tracers, particularly for architectural visualization where indirect lighting exhibits high spatial coherence.
+		Radiance, authored by Greg Ward, is a gold standard in physically-based rendering, renowned for its ability to simulate realistic lighting in architectural and interior scenes. One of its key innovations is ambient global illumination (GI)—an efficient technique for caching and interpolating indirect diffuse light. We implemented Ward's ambient caching algorithm in the CS184 pathtracer, developing an adaptive octree-based system that replaces expensive Monte Carlo sampling with spatial interpolation. Our implementation achieves 15 - 30× speedups for interior scenes while maintaining visual quality. Through evaluation on Cornell Box scenes with varying geometric complexity, we demonstrate that ambient caching remains a powerful optimization for modern path tracers, particularly for architectural visualization where indirect lighting exhibits high spatial coherence.
 		</p>
 
 
@@ -68,7 +92,7 @@
 
 		<h3>Summary</h3>
 		<p>
-		We implemented an octree-based ambient global illumination caching system inspired by Greg Ward's Radiance renderer. Our approach accelerates indirect lighting computation by caching and interpolating previously computed values, achieving \( 15 - 20× \) speedup over Monte Carlo path tracing in HW3.
+		We implemented an octree-based ambient global illumination caching system inspired by Greg Ward's Radiance renderer. Our approach accelerates indirect lighting computation by caching and interpolating previously computed values, achieving 15 - 30× speedup over Monte Carlo path tracing in HW3.
 		</p>
 
 		<p>
@@ -81,7 +105,7 @@
 
 		<ul>
 			<li>
-            <strong>Adaptive Octree Data Structure:</strong> A hierarchical spatial subdivision that dynamically adapts to scene complexity. The octree automatically subdivides when leaf nodes exceed \( 8 \) samples, concentrating resolution where illumination varies most while maintaining memory efficiency in uniform regions.
+            <strong>Adaptive Octree Data Structure:</strong> A hierarchical spatial subdivision that dynamically adapts to scene complexity. The octree automatically subdivides when leaf nodes exceed 8 samples, concentrating resolution where illumination varies most while maintaining memory efficiency in uniform regions.
 			</li>
 			
             <li>
@@ -103,7 +127,7 @@
 
 		<h3>Adaptive Octree Data Structure</h3>
 		<p>
-		<em>Fig 2.1</em> shows octree subdivision adaptive to the scene. As new cache samples in red are added in regions with complex illumination, the octree automatically subdivides when any leaf exceeds \( 8 \) samples, maintaining efficient spatial organization throughout the rendering process.
+		<em>Fig 2.1</em> shows octree subdivision adaptive to the scene. As new cache samples in red are added in regions with complex illumination, the octree automatically subdivides when any leaf exceeds 8 samples, maintaining efficient spatial organization throughout the rendering process.
 		</p>
 
 		<figure style="text-align: center; margin: 1em 0;">
@@ -114,7 +138,7 @@
 		</figure>
 
 		<p>
-		<em>Figure 2.1</em> illustrates the progressive octree refinement during ambient cache construction for the Cornell Box bunny scene. Starting from an empty octree <code>(Level 0)</code>, the first \( 8 \) cache samples are computed when rays hit the bunny's surface under the area light, triggering the initial subdivision into \( 8 \) octants <code>(Level 1)</code>. As rendering continues, new cache samples (shown in red) are generated when cache queries miss, particularly in the bottom-left octant where the bunny's body receives complex indirect illumination from the surrounding walls. When this octant accumulates \( 8 \) samples, it automatically subdivides <code>(Level 2)</code>, creating finer spatial resolution precisely where illumination are strongest. This process continues adaptively <code>(Level 3)</code>, with the octree depth increasing only in regions with high sample density, such as areas with geometric detail or varying illumination. Empty octants and uniform regions remain at coarser levels, optimizing both memory usage and query performance. This adaptive refinement ensures \( O(log(n)) \) lookup complexity while concentrating computational resources where they contribute most to rendering quality.
+		<em>Figure 2.1</em> illustrates the progressive octree refinement during ambient cache construction for the Cornell Box bunny scene. Starting from an empty octree <code>(Level 0)</code>, the first 8 cache samples are computed when rays hit the bunny's surface under the area light, triggering the initial subdivision into 8 octants <code>(Level 1)</code>. As rendering continues, new cache samples (shown in red) are generated when cache queries miss, particularly in the bottom-left octant where the bunny's body receives complex indirect illumination from the surrounding walls. When this octant accumulates 8 samples, it automatically subdivides <code>(Level 2)</code>, creating finer spatial resolution precisely where illumination are strongest. This process continues adaptively <code>(Level 3)</code>, with the octree depth increasing only in regions with high sample density, such as areas with geometric detail or varying illumination. Empty octants and uniform regions remain at coarser levels, optimizing both memory usage and query performance. This adaptive refinement ensures \( O(log(n)) \) lookup complexity while concentrating computational resources where they contribute most to rendering quality.
 		</p>
 		
 
@@ -185,7 +209,7 @@
 		</p>
 		<ul>
 			<li>
-            <strong>Cache Density Parameter Tuning:</strong> Finding the optimal <code>min_spacing</code> parameter for different scenes proved more complex than anticipated. Too sparse spacing \( (> 0.05)\) caused visible interpolation artifacts and banding, while too dense spacing \( (< 0.01)\) negated performance benefits and increased memory usage. We addressed this through extensive experimentation and developed our cache visualization system with <code>-V</code> flag to visually debug cache distribution. This allowed us to identify that interior scenes work best with densities around \( 0.012-0.02 \), providing a good balance between quality and performance.
+            <strong>Cache Density Parameter Tuning:</strong> Finding the optimal <code>min_spacing</code> parameter for different scenes proved more complex than anticipated. Too sparse spacing (> 0.05) caused visible interpolation artifacts and banding, while too dense spacing (< 0.01) negated performance benefits and increased memory usage. We addressed this through extensive experimentation and developed our cache visualization system with <code>-V</code> flag to visually debug cache distribution. This allowed us to identify that interior scenes work best with densities around 0.012 - 0.02, providing a good balance between quality and performance.
 			</li>
 			
             <li>
@@ -207,7 +231,7 @@
 		</p>
 
 		<p>
-		We initially aimed to implement Ward's complete algorithm with rotation gradients and translational gradients. However, the recursion issues forced us to simplify. Rather than viewing this as failure, we learned that a working, simpler solution often provides most of the benefit of a theoretically superior but complex approach. Our gradient-free implementation still achieved \( 10 - 20× \) speedups with good visual quality, validating the pragmatic choice to prioritize functionality over theoretical completeness.
+		We initially aimed to implement Ward's complete algorithm with rotation gradients and translational gradients. However, the recursion issues forced us to simplify. Rather than viewing this as failure, we learned that a working, simpler solution often provides most of the benefit of a theoretically superior but complex approach. Our gradient-free implementation still achieved 10 - 30× speedups with good visual quality, validating the pragmatic choice to prioritize functionality over theoretical completeness.
 		</p>
 
 
@@ -261,35 +285,343 @@
 		</p>
 
 		<figure style="text-align: center; margin: 1em 0;">
-  			<img src="Computation.jpg" alt="Computation.jpg" style="width: 100%">
+  			<img src="f-03.jpg" alt="f-03.jpg" style="width: 100%">
   			<figcaption style="margin-top: 0.5em;"><em>Figure 3.1:</em> 
 			Performance comparison of Monte Carlo reference vs. octree caching with varying cache densities (Cornell Box with spheres).
   			</figcaption>
 		</figure>
 
-		<p>
-		| Method       | Cache Density | Render Time | Speedup   | Visual Quality         |
-  		| ------------ | ------------- | ----------- | --------- | ---------------------- |
- 		| Monte Carlo  | -             | 422.48s     | 1.0×      | Reference              |
-  		| Octree Cache | 0.012         | 23.01s      | **18.3×** | Excellent match        |
-  		| Octree Cache | 0.02          | 17.21s      | **24.5×** | Good, slight artifacts |
-  		| Octree Cache | 0.035         | 14.25s      | **29.6×** | Visible interpolation  |
-  		| Octree Cache | 0.05          | 13.42s      | **31.5×** | Sparse, some banding   |
-		<p>
+		<table border="1" cellspacing="0" cellpadding="5">
+  			<thead>
+    			<tr>
+      				<th>Method</th>
+      				<th>Cache Density</th>
+      				<th>Render Time</th>
+      				<th>Speedup</th>
+    			</tr>
+  			</thead>
+  			<tbody>
+    			<tr>
+      				<td>Monte Carlo</td>
+      				<td>-</td>
+      				<td>422.48s</td>
+     		 		<td>1.0×</td>
+    			</tr>
+    			<tr>
+      				<td>Octree Cache</td>
+      				<td>0.012</td>
+      				<td>23.01s</td>
+      				<td><b>18.3×</b></td>
+    			</tr>
+    			<tr>
+      				<td>Octree Cache</td>
+      				<td>0.02</td>
+      				<td>17.21s</td>
+      				<td><b>24.5×</b></td>
+    			</tr>
+    			<tr>
+      				<td>Octree Cache</td>
+      				<td>0.035</td>
+      				<td>14.25s</td>
+      				<td><b>29.6×</b></td>
+    			</tr>
+    			<tr>
+      				<td>Octree Cache</td>
+      				<td>0.05</td>
+     		 		<td>13.42s</td>
+      				<td><b>31.5×</b></td>
+    			</tr>
+  			</tbody>
+		</table>
 			
 		<p>
-		Please include in your final deliverable a small clip, gif, movie, or animation of your team’s output for the final showcase.
+		The spheres scene showcases dramatic speedups, achieving up to <strong>31.5× faster rendering</strong> with the sparsest cache.
+		</p>
+
+		<figure style="text-align: center; margin: 1em 0;">
+  			<img src="f-05.jpg" alt="f-05.jpg" style="width: 100%">
+  			<figcaption style="margin-top: 0.5em;"><em>Figure 3.2:</em> 
+			Performance comparison of Monte Carlo reference vs. octree caching with varying cache densities (Cornell Box with bunny).
+  			</figcaption>
+		</figure>
+
+		<p>
+		The bunny scene, with its intricate geometry, presents a more challenging test:
+		</p>
+
+		<table border="1" cellspacing="0" cellpadding="5">
+  			<thead>
+    			<tr>
+      				<th>Method</th>
+      				<th>Cache Density</th>
+      				<th>Render Time</th>
+      				<th>Speedup</th>
+    			</tr>
+  			</thead>
+  			<tbody>
+    			<tr>
+      				<td>Monte Carlo</td>
+      				<td>-</td>
+      				<td>491.54s</td>
+     		 		<td>1.0×</td>
+    			</tr>
+    			<tr>
+      				<td>Octree Cache</td>
+      				<td>0.012</td>
+      				<td>32.21s</td>
+      				<td><b>15.3×</b></td>
+    			</tr>
+    			<tr>
+      				<td>Octree Cache</td>
+      				<td>0.02</td>
+      				<td>22.99</td>
+      				<td><b>21.4×</b></td>
+    			</tr>
+    			<tr>
+      				<td>Octree Cache</td>
+      				<td>0.035</td>
+      				<td>18.76s</td>
+      				<td><b>26.2×</b></td>
+    			</tr>
+    			<tr>
+      				<td>Octree Cache</td>
+      				<td>0.05</td>
+     		 		<td>17.73s</td>
+      				<td><b>27.7×</b></td>
+    			</tr>
+  			</tbody>
+		</table>
+
+		<p>
+		The complex dragon geometry requires denser sampling than the simple spheres, as evidenced by the cache visualization showing concentrated samples around the model's detailed features. Despite the complexity, we still achieve 15 - 27× speedups depending on quality requirements.	
+		</p>
+
+		<p>
+		Our results reveal a clear density-performance trade-off where sparser caches render faster but introduce interpolation artifacts, with the optimal density depending on scene complexity and quality requirements. The cache visualizations confirm that our octree successfully implements adaptive sampling, concentrating samples near geometric details and illumination discontinuities while maintaining sparse sampling in uniform regions like the Cornell Box walls. Across both simple and complex scenes, we observe consistent speedups of 15 - 30× for interior scenes, demonstrating the robustness of our approach. Most importantly, at a density of 0.012, our cached results are nearly indistinguishable from the Monte Carlo reference while still providing order-of-magnitude performance improvements, validating that ambient caching can deliver both quality and speed for architectural visualization applications.
 		</p>
 
 
 
 
 
+		<h3>Impact of Sample Count on Quality</h3>
+
+		<figure style="text-align: center; margin: 1em 0;">
+  			<img src="f-01.jpg" alt="f-01.jpg" style="width: 100%">
+  			<figcaption style="margin-top: 0.5em;"><em>Figure 3.3:</em> 
+			Increasing samples per pixel improves cache quality by reducing interpolation artifacts (cache density 0.012).
+  			</figcaption>
+		</figure>
+
+		<p>
+		For <code>CBspheres.dae</code>, the results are the following:
+		</p>
+
+		<table>
+ 		 	<thead>
+    			<tr>
+      				<th>Samples/Pixel</th>
+      				<th>Render Time</th>
+      				<th>Speedup vs MC</th>
+			    </tr>
+  			</thead>
+  			<tbody>
+    			<tr>
+      				<td>Monte Carlo (1024)</td>
+      				<td>422.48s</td>
+      				<td>1.0×</td>
+    			</tr>
+    			<tr>
+      				<td>8192</td>
+      				<td>99.16s</td>
+      				<td><b>4.3×</b></td>
+    			</tr>
+    			<tr>
+      				<td>4096</td>
+      				<td>55.72s</td>
+      				<td><b>7.6×</b></td>
+    			</tr>
+    			<tr>
+      				<td>2048</td>
+      				<td>34.55s</td>
+      				<td><b>12.2×</b></td>
+    			</tr>
+    			<tr>
+      				<td>1024</td>
+      				<td>23.01s</td>
+      				<td><b>18.3×</b></td>
+    			</tr>
+  			</tbody>
+		</table>
+
+		<p>
+		For <code>CBbunny.dae</code>, the results are the following:
+		</p>
+
+		<table>
+ 		 	<thead>
+    			<tr>
+      				<th>Samples/Pixel</th>
+      				<th>Render Time</th>
+      				<th>Speedup vs MC</th>
+			    </tr>
+  			</thead>
+  			<tbody>
+    			<tr>
+      				<td>Monte Carlo (1024)</td>
+      				<td>491.54s</td>
+      				<td>1.0×</td>
+    			</tr>
+    			<tr>
+      				<td>8192</td>
+      				<td>139.61s</td>
+      				<td><b>3.5×</b></td>
+    			</tr>
+    			<tr>
+      				<td>4096</td>
+      				<td>79.94s</td>
+      				<td><b>6.1×</b></td>
+    			</tr>
+    			<tr>
+      				<td>2048</td>
+      				<td>47.59s</td>
+      				<td><b>10.3×</b></td>
+    			</tr>
+    			<tr>
+      				<td>1024</td>
+      				<td>31.16s</td>
+      				<td><b>15.8×</b></td>
+    			</tr>
+  			</tbody>
+		</table>
+
+		<p>
+		While our default configuration uses 1024 samples per pixel, we investigated how sample count affects rendering quality with cached ambient GI.
+		</p>
+
+		<p>
+		Increasing sample count significantly improves visual quality by reducing variance in the cached values. With 8192 samples, discontinuous patches and interpolation artifacts virtually disappear, producing results nearly indistinguishable from the Monte Carlo reference. However, this comes at the cost of reduced speedup—from 18× at 1024 samples to 4× at 8192 samples. For production rendering where quality is paramount, using 4096 samples provides a excellent balance with 6-7× speedup and minimal visible artifacts. This demonstrates that our caching system's quality can be tuned based on application requirements: fast preview renders at 1024 samples or high-quality finals at 4096-8192 samples.
+		</p>
+
+		
+
+
+
+		<h3>Comparison with Initial Grid-based Prototype</h3>
+		
+		<p>
+		Before implementing the octree structure, we prototyped with a uniform 3D grid cache to validate the ambient caching concept:
+		</p>
+
+		<figure style="text-align: center; margin: 1em 0;">
+  			<img src="f-03.jpg" alt="f-03.jpg" style="width: 100%">
+  			<figcaption style="margin-top: 0.5em;"><em>Figure 3.4:</em> 
+			Grid-based caching prototype showing quality degradation and memory inefficiency compared to adaptive octree approach.
+			</figcaption>
+		</figure>
+
+				<table>
+ 		 	<thead>
+    			<tr>
+      				<th>Grid Spacing</th>
+      				<th>Render Time</th>
+      				<th>Speedup</th>
+			    </tr>
+  			</thead>
+  			<tbody>
+    			<tr>
+      				<td>Monte Carlo</td>
+      				<td>80.69s</td>
+      				<td>1.0×</td>
+    			</tr>
+    			<tr>
+      				<td>0.5</td>
+      				<td>9.78s</td>
+      				<td><b>8.3×</b></td>
+    			</tr>
+    			<tr>
+      				<td>1.0</td>
+      				<td>6.71s</td>
+      				<td><b>12.0×</b></td>
+    			</tr>
+    			<tr>
+      				<td>1.5</td>
+      				<td>4.72s</td>
+      				<td><b>17.1×</b></td>
+    			</tr>
+    			<tr>
+      				<td>2.0</td>
+      				<td>5.26s</td>
+      				<td><b>15.3×</b></td>
+    			</tr>
+  			</tbody>
+		</table>
+
+		<p>
+		The grid-based approach revealed fundamental limitations that motivated our octree implementation. The uniform grid wastes memory by allocating cells even in empty space, consuming resources for areas with no geometry. More critically, the fixed resolution cannot adjust to local complexity—fine grids with 0.5 spacing show severe interpolation artifacts from over-sampling, while coarse grids at 1.5-2.0 spacing produce unusable results with visible banding. Unlike our octree which achieves 15-30× speedups with excellent quality, the grid approach offers no quality-performance sweet spot where both metrics are acceptable. The cache visualization (bottom row) clearly shows the grid's inability to adapt, with samples uniformly distributed regardless of geometric or illumination complexity. While this prototype validated the ambient caching concept, it demonstrated that adaptive spatial structures are essential for production-quality ambient GI, ultimately leading us to develop the octree-based solution.
+		</p>
+
+		
+
+
+
+		<h2>Limitations</h2>
+
+		<p>
+		Unlike the Cornell Box scenes which achieved 15 - 30× speedups, this exterior scene shows only marginal improvement (- 2×). The cache visualization reveals the followin reasons: samples are distributed across the entire model surface but capture primarily direct illumination, which doesn't benefit from caching. Without surrounding walls to create complex indirect bounces, the ambient cache cannot exploit spatial coherence in indirect lighting. There simply isn't much indirect lighting to cache.
+		</p>
+
+		<p>
+		This result validates that ambient caching is specifically optimized for interior architectural scenes where indirect illumination from wall-to-wall light bounces dominates the lighting complexity. For exterior scenes or objects in open environments, the overhead of cache management provides little benefit over direct Monte Carlo sampling. This aligns with Ward's original Radiance design, which targeted architectural interior visualization where indirect lighting calculations are most expensive and spatially coherent.
+		</p>
+
+		<figure style="text-align: center; margin: 1em 0;">
+  			<img src="f-04.jpg" alt="f-04.jpg" style="width: 100%">
+  			<figcaption style="margin-top: 0.5em;"><em>Figure 4.1:</em> 
+			Ambient caching provides minimal benefit for exterior scenes dominated by direct lighting.
+			</figcaption>
+		</figure>
+
+
+
+
+
+		<h2>Future Work</h2>
+
+		<p>
+		Our implementation successfully demonstrates ambient GI caching with significant speedups, but has several limitations that present opportunities for future work. Most notably, we were unable to implement Ward's full gradient-based extrapolation due to recursive computation issues, instead relying on distance and normal-weighted interpolation. While our results show this simplified approach still provides good quality, implementing proper gradients through techniques like finite differences or deferred computation could further improve interpolation accuracy.
+		</p>
+
+		<p>
+		The system currently requires manual tuning of cache density parameters for different scenes, as we observed optimal values ranging from 0.012 for complex geometry to 0.05 for simple scenes. Future work could implement automatic density selection based on scene analysis or adaptive refinement during rendering. Additionally, our current implementation focuses on diffuse interreflection and does not handle glossy or specular indirect illumination, which would require extending the cache to store directional information.
+		</p>
+			
+
+
+
+			
 		<h2>References</h2>
 				
 		<p>
-		Include any references like papers, websites, youtubes, ...	
+		Primary reference:
 		</p>
+
+		<ul>
+			<li>
+			<a href="https://dl.acm.org/doi/10.1145/192161.192286">Ward, Gregory J. "The RADIANCE lighting simulation and rendering system."Proceedings of the 21st annual conference on Computer graphics and interactive techniques. 1994.</a>
+			</li>
+        </ul>
+
+		<p>
+		Supporting reference:
+		</p>
+
+		<ul>
+			<li>
+			<a href="https://sgvr.kaist.ac.kr/~sungeui/SGA08/course_note/IC.pdf">Křivánek, J., & Gautron, P. (2007). "Practical global illumination with irradiance caching." (Modern implementation guide)</a>
+			</li>
+        </ul>
+		
 
 
 
