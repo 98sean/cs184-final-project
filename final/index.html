@@ -658,7 +658,7 @@
 		<p>
 		The grid-based approach revealed fundamental limitations that motivated our octree implementation. The uniform grid wastes memory by 
 		allocating cells even in empty space, consuming resources for areas with no geometry. More critically, the fixed resolution cannot 
-		adjust to local complexity—fine grids with 0.5 spacing show severe interpolation artifacts from over-sampling, while coarse grids at 
+		adjust to local complexity. Fine grids with 0.5 spacing show severe interpolation artifacts from over-sampling, while coarse grids at 
 		1.5 - 2.0 spacing produce unusable results with visible banding. Unlike our octree which achieves 15 - 30× speedups with excellent 
 		quality, the grid approach offers no quality-performance sweet spot where both metrics are acceptable. The cache visualization 
 		(bottom row) clearly shows the grid's inability to adapt, with samples uniformly distributed regardless of geometric or illumination 
