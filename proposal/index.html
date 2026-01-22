@@ -28,16 +28,16 @@
 	<body>
 		<div class="container">
 		<h1>CS184 Summer 2025 Final Project Proposal</h1>
-		<div style="text-align: center;">Title: </div>	
-		<div style="text-align: center;">Members: </div>
+		<div style="text-align: center;">Ambient Global Illumination with Caching</div>	
+		<div style="text-align: center;">Members: Xin Zhou, Sean Lee, Archisha Nangia, Carlynda Gao</div>
 
 		<br>
 
-		Link to webpage: <a href="https://98sean.github.io/cs184-final-project/proposal/index.html">cs184-final-project/proposal/</a>
+		<a href="https://98sean.github.io/cs184-final-project/proposal/index.html">Link to webpage</a>
 		
 		<br>
 
-		Link to GitHub repository: <a href="https://github.com/98sean/cs184-final-project">cs184-final-project</a>
+		<a href="https://github.com/98sean/cs184-final-project">Link to GitHub repository</a>
 
 			
 
@@ -46,7 +46,7 @@
 		<h2>Summary</h2>
 				
 		<p>
-		2-3 sentences that summarize your project
+		<em>Radiance</em> by Greg Ward is a gold standard in physical-based rendering, renowned for its ability to simulate realistic lighting in architectural and interior scenes. One of its key innovations is the use of ambient global illumination (GI)—an efficient technique for simulating indirect diffuse light, which is crucial for effects like color blending and soft, non-black shadows. Our goal is to study and implement ambient GI in the CS184 pathtracer (HW3), to simulate diffuse interreflections in interior spaces.
 		</p>
 
 
@@ -56,7 +56,11 @@
 		<h2>Problem Description</h2>
 				
 		<p>
-		Here you should provide the context for your idea. Describe the problem that you are trying to solve, why it is important, where it is challenging. Give us a general idea on how you are going to solve it.
+		One challenge of Monte Carlo path-tracing is its significant performance limitations in interior scenes, as it requires thousands of samples per pixel to achieve acceptable quality due to the complex indirect lighting caused by inter-surface reflections. This approcach results in multiple hours of rendering for moderately complex scenes, making iterative design workflows impractical.
+		</p>
+
+		<p>
+		This project addresses this computational bottleneck by implementing Greg Ward's ambient global illumination algorithm from Radiance, which replaces expensive Monte Carlo sampling with spatial caching of ambient lighting values. We aim to demonstrate whether this approach can provide the theoretical 5-20x performance improvement for interior rendering while maintaining visual quality.	
 		</p>
 
 
@@ -64,41 +68,174 @@
 
 
 		<h2>Goals and Deliverables</h2>
+
+		<h3>Baseline Plan</h3>
 				
-		<p>
-		This is the most important part of your proposal. You should carefully think through what you are trying to accomplish, what results you are going for, and why you think you can accomplish those goals. For example:
-		</p>
+		<ul>
+            		<li>
+                	<strong>Ambient Global Illumination:</strong>
+						<li>
+						Replace Monte Carlo global illumination with Ward's ambient caching
+						</li>
+
+						<li>
+						Spatial ambient cache with basic data structure
+						</li>
+
+						<li>
+						Ambient value computation and cache interpolation
+						</li>
+
+						<li>
+						Basic cache management
+						</li>
+					</li>
+			
+            		<li>
+                	<strong>Performance Validation:</strong> 
+						<li>
+						5-20x speedup over current Monte Carlo approach
+						</li>
+
+						<li>
+						Quality/performance comparison analysis
+						</li>
+
+						<li>
+						Simple interior scene rendering demonstration
+						</li>
+					</li>
+			
+            		<li>
+               	 	<strong>Success Metrics:</strong> 
+						<li>
+						Interior scenes render faster than current approach in HW3
+						</li>
+
+						<li>
+						Visual quality maintained compared to Monte Carlo
+						</li>
+
+						<li>
+						Successful implementation of core ambient caching algorithm
+						</li>
+					</li>
+        </ul>
+
+		<h3>Baseline Results</h3>
+		<figure style="text-align: center; margin: 1em 0;">
+  			<img src="Figure2_1.jpg" alt="Figure2_1.jpg" style="width: 100%">
+  			<figcaption style="margin-top: 0.5em;"><em>Figure 2.1:</em> 
+			The expected results for ambient GI with caching from Benedikt-bitterli's website
+  			</figcaption>
+		</figure>
 
 		<p>
-		Since this is a graphics class you will likely define the kind of images you will create (e.g. including a photo of a new lighting effect you will simulate).
+		For the baseline results, we aim to reproduce the visual qualities illustrated in <em>Figure 2.1</em>, which demonstrate the expected appearance of ambient global illumination with caching. Our goal is to achieve smooth indirect lighting, diffuse color bleeding between surfaces, and softened shadow regions where ambient light plays a significant role. These features indicate the successful integration of indirect light bounces using hemisphere sampling. To further validate our implementation, we plan to render several simple interior scenes, using flat colors in place of textures due to limitations in the current framework. Additionally, we will use area lights exclusively throughout the project, without implementing IES profiles or any complex light source as seen in the second example image.
 		</p>
+
+		<figure style="text-align: center; margin: 1em 0;">
+  			<img src="Figure2_2.jpg" alt="Figure2_2.jpg" style="width: 100%">
+  			<figcaption style="margin-top: 0.5em;"><em>Figure 2.2:</em> 
+			The visualization of caching from the classic "Irradiance Caching" paper by Jensen et al.
+  			</figcaption>
+		</figure>	
 
 		<p>
-		If you are working on an interactive system, describe what demo you will create.
+		In addition, we want to visualize cache points directly within our renderer—not only to validate interpolation quality and sampling density but also to assist in debugging and refinement of our caching strategy. This visualization will help ensure that our ambient cache adapts appropriately to scene geometry and lighting variation.
 		</p>
 
-		<p>
-		Define how you will measure the quality / performance of your system (e.g. graphs showing speedup, or quantifying accuracy). It may not be possible to define precise target metrics at this time, but we encourage you to try.
-		</p>
+		<h3>Aspirational Plan</h3>
+		<ul>
+            		<li>
+                	Basic texture support: Simple diffuse texture mapping only
+					</li>
+			
+            		<li>
+                	Cache optimization: Gradient-based cache validation
+					</li>
+			
+            		<li>
+               	 	Advanced interpolation: More sophisticated cache weighting
+					</li>
+        </ul>
 
-		<p>
-		What questions do you plan to answer?
-		</p>
-
-		<p>
-		You should break this section into two parts: (1) what you plan to deliver, and (2) what you hope to deliver. In (1), describe what you believe you must accomplish to have a successful project and achieve the grade you expect (i.e. your baseline plan – planning for some unexpected problems would make sense). In (2), describe what you hope to achieve if things go well and you get ahead of schedule (your aspirational plan).
-		</p>
-
-
+		<h3>Questions we plan to answer:</h3>
+		<ul>
+            		<li>
+                	<strong>Performance Analysis:</strong> How significant is the speedup when replacing Monte Carlo global illumination with ambient caching in interior scenes? Can we achieve the theoretical 10-100x improvement?
+					</li>
+			
+            		<li>
+                	<strong>Quality Trade-offs:</strong> What are the visual differences between ambient cached lighting and Monte Carlo global illumination? Where does ambient caching excel or fall short?
+					</li>
+			
+            		<li>
+                	<strong>Implementation Feasibility:</strong> How challenging is it to integrate Ward's ambient caching algorithm into an existing pathtracer architecture? What are the main implementation hurdles?
+					</li>
+        </ul>
 
 
 			
 		<h2>Schedule</h2>
 
 		<p>
-		In this section you should organize and plan the tasks and subtasks that your team will execute. Since presentations are ~4 weeks from the due-date of the proposal, you should include a set of tasks for every week.
+		Week 1 (7/28-8/4): Foundation + Milestone
 		</p>
 
+		<ul>
+            		<li>
+					Literature review of Ward's <em>Radiance</em> paper
+					</li>
+			
+            		<li>
+					Design basic ambient cache data structure
+					</li>
+			
+            		<li>
+					Milestone presentation: Project scope and initial design
+					</li>
+        </ul>
+
+		<p>
+		Week 2 (8/4-8/7): Core Implementation
+		</p>
+
+		<ul>
+            		<li>
+					Implement ambient cache core functionality
+					</li>
+			
+            		<li>
+					Replace Monte Carlo global illumination calls
+					</li>
+			
+            		<li>
+					Basic cache interpolation and management
+					</li>
+		</ul>
+
+		<p>
+		Week 3 (8/7-8/13): Integration + Final Presentation
+		</p>
+
+		<ul>
+            		<li>
+					Complete ambient GI integration and testing
+					</li>
+			
+            		<li>
+					Performance benchmarking and comparison
+					</li>
+			
+            		<li>
+					Scene creation and demonstration
+					</li>
+
+					<li>
+					Final presentation
+					</li>
+		</ul>
 
 
 
@@ -106,7 +243,33 @@
 		<h2>Resources</h2>
 		
 		<p>
-		List what resources, e.g. books, papers and/or online resources that are references for your project. List the computing platform, hardware and software resources that you will use for your project. You have a wide latitude here to use what you have access to, but be aware that you will have to support and trouble-shoot on your platform yourselves. If you are starting from an existing piece of code or system, describe and provide a pointer to it here.
+		We would like to use HW3 as a solid foundation, extending PART 4 to support the ambient global illumination mode.
+		</p>
+
+		<p>
+		<strong>Primary Reference:</strong>
+		<li><a href="https://dl.acm.org/doi/10.1145/192161.192286">Ward, Gregory J. "The RADIANCE lighting simulation and rendering system."Proceedings of the 21st annual conference on Computer graphics and interactive techniques. 1994.</a></li>
+		</p>
+
+		<p>
+		<strong>Supporting References:</strong>
+		<li><a href="https://dl.acm.org/doi/10.1145/3450626.3459812">Křivánek, J., & Gautron, P. (2007). "Practical global illumination with irradiance caching." (Modern implementation guide)</a></li>
+		</p>
+
+		<p>
+		<strong>Computing Platform:</strong>
+		<ul>
+			<li>Development/Testing: Windows 10/11 with Visual Studio 2022</li>
+
+			<li>Graphics support: Soda 330 instructional machine</li>
+
+			<li>Build system: CMake with existing CS 184 pathtracer framework</li>
+		</ul>
+		</p>
+
+		<p>
+		<strong>Scene creation Resource:</strong>
+		<li><a href="https://benedikt-bitterli.me/resources/">https://benedikt-bitterli.me/resources/</a></li>
 		</p>
 
 
